@@ -17,7 +17,7 @@ import signUpNav from './src/navigations/signupNavigation';
 import { createStackNavigator } from '@react-navigation/stack';
 const Stack = createStackNavigator();
 
-
+//
 
 
 class App extends Component {
