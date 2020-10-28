@@ -27,7 +27,6 @@ class App extends Component {
     };
   }
 
-
   render() {
     console.log(this.props.isSignedIn);
         console.log(this.props.isSignedIn);

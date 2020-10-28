@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Home from './homeInterNav';
-import PastComplaints from '../scenes/pastComplaints/pastComplaints';
+import PastComplaints from './pastComplaintsNav';
 import OngoingComplaints from '../scenes/ongoingComplaints/ongoingComplaints';
 import settingsNav from  './settingsNavigation';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';

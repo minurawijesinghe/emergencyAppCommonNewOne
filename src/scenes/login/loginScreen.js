@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Text, View, TouchableOpacity, ScrollView , AsyncStorage, Alert} from 'react-native'
-import {  changeText , signedIn, signedOut } from '../../actions';
+import {  changeText , signedIn, signedOut, updateToken } from '../../actions';
 import { connect } from 'react-redux';
 import {Item, Input, Label} from 'native-base';
 import styles from './loginScreenStyles';
@@ -50,8 +50,11 @@ class loginScreen extends Component {
         }).then((response)=>{
           console.log('loginCalled')
           console.log(response.data.token);
+
+/// if error happen in login update token function should move inside to the condition function,
+
+          this.props.updateToken(response.data.token);
           if(response.data.success){
-            Alert.alert(JSON.stringify("login successful"));  
             this._storeData(response.data.token).then(
               this._retrieveData().then(
                 this.props.signedIn()
@@ -59,7 +62,7 @@ class loginScreen extends Component {
               ).catch(err=>console.log('storing error',err));
           }
         }).catch((err)=>{
-          Alert.alert(JSON.stringify(err)); 
+
         console.log(err) })
       }else{
     Alert.alert('empty fields are there')  }
@@ -119,4 +122,4 @@ function mapStateToProps(state) {
     }
   }
 
-export default connect(mapStateToProps, { signedIn, signedOut})(loginScreen);
+export default connect(mapStateToProps, { signedIn, signedOut, updateToken})(loginScreen);

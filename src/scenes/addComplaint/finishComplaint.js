@@ -233,23 +233,7 @@ export default class finishComplaint extends Component {
       imageUri = this.customizeUrl(image.path);
     });
   };
-  /* downloadVideo() {
-       RNFS.downloadFile({
-         fromUrl:
-           'https://firebasestorage.googleapis.com/v0/b/emergrncyapp.appspot.com/o/complaints%2FcomplaintId%2Fvideo2.mp4?alt=media&token=777230b5-38f3-4da3-ad1d-8101fd952d51',
-         toFile: storagePath,
-         background: true,
-       })
-         .promise.then(res => {
-           console.log('File Downloaded', res);
-         })
-         .catch(err => {
-           console.log('err downloadFile', err);
-         });
-     }*/
   componentDidMount() {
-    // console.log('url ',url)
-    // this.downloadVideo();
     this._retrieveData();
     const {latitude, longitude} = this.props.route.params;
     this.setState({
@@ -281,8 +265,6 @@ export default class finishComplaint extends Component {
     }
   };
   uploadVideo = complaintId => {
-    //console.log('video uri', videoUri);
-
     const reference = storage().ref(`/complaints/${complaintId}/video.mp4`);
     const url = reference.getDownloadURL();
     console.log('url video', url);
@@ -311,19 +293,6 @@ export default class finishComplaint extends Component {
       )
       .catch(err => console.log(err));
 
-    /* Axios({
-                url: baseURL + '/complaint/video',
-                method: 'PUT',
-                headers: {
-                    Authorization: `bearer ${this.state.token}`
-                },
-                data: {
-                   video: url,
-                }
-            })
-            .then((complaint)=>{
-               console.log(complaint.data.complaint);
-            }) */
   };
   uploadAudio = complaintId => {
     // console.log('complaintId', complaintId);
@@ -358,11 +327,7 @@ export default class finishComplaint extends Component {
       .catch(err => console.log(err));
   };
   uploadImage = complaintId => {
-    // console.log('image uri', imageUri);
     const reference2 = storage().ref(`/complaints/${complaintId}/image.jpg`);
-
-    // console.log('url image', url);
-
     reference2
       .putFile(imageUri)
       .then(
@@ -389,7 +354,6 @@ export default class finishComplaint extends Component {
       .catch(err => console.log(err));
   };
   sendComplaint() {
-    // console.log(this.state.token);
     Axios({
       url: baseURL + '/complaint',
       method: 'POST',
@@ -399,6 +363,8 @@ export default class finishComplaint extends Component {
       data: {
         latitude: this.state.complaintLat,
         longitude: this.state.complaintLon,
+        note:this.state.finalNote,
+        complainerType:'Not the Victim',
       },
     })
       .then(
@@ -419,14 +385,24 @@ export default class finishComplaint extends Component {
     return str;
   }
   toggleNoteInput=()=>{
-      if(this.state.isNoteAdded){
+      if(!this.state.isNoteAdded){
+        //console.log('note added', this.state.note);
         this.setState({
-            finalNote:null,
-        })
-      };
+            finalNote:this.state.note,
+        });
+       
+      }else{
+        console.log('note removed');
+
+        this.setState({
+          finalNote:null,
+      });
+      }
       this.setState({
           isNoteAdded:!this.state.isNoteAdded,
       });
+      console.log('finalNote input , ',this.state.finalNote);
+
   }
   render() {
     return (
