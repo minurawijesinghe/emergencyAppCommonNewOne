@@ -7,6 +7,7 @@ import styles from './loginScreenStyles';
 import Button from '../../components/molecules/buttons/cornerRoundButton';
 import axios from 'axios';
 import baseUrl from '../../utils/baseURL';
+import LottieView from 'lottie-react-native';
 
 
 class loginScreen extends Component {
@@ -71,7 +72,9 @@ class loginScreen extends Component {
             <View style={styles.container} >
                 {//<Text> {this.props.word} </Text>
                 }
-                <Text style={styles.loginText}>LogIn</Text>
+                <View style={styles.loginAnimationContainer}>
+                  <LottieView source={require('../../utils/lottieAnimations/login.json')} autoPlay loop speed={0.5}/>
+                </View>
                 <View style={styles.itemContainer}>
                   <Item floatingLabel>
                     <Label style={styles.labelStyle}>National identity card number</Label>

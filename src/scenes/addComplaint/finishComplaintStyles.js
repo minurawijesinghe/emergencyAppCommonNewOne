@@ -146,5 +146,28 @@ const styles = StyleSheet.create({
         height:120,
         borderRadius:20,
     },
+    noteContainer:{
+        flexDirection:'row',
+        justifyContent:'space-between',
+        width:ScreenSize.width*0.9,
+        alignItems:'center',
+        marginBottom:10,
+
+    },
+    inputContainer:{
+        width:ScreenSize.width*0.7,
+        borderRadius:20,
+        justifyContent:'center',
+        backgroundColor:Colors.WHITE,
+        paddingHorizontal:10,
+    },
+    inputText:{
+        fontFamily:Fonts.OpenSans,
+        fontSize:Size.large,
+    },
+    noteIconContainer:{
+        alignItems:'center',
+        justifyContent:'center',
+    },
 });
 export default styles;

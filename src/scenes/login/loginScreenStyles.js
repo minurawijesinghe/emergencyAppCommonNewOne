@@ -31,6 +31,13 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         marginTop:30,
     },
+    loginAnimationContainer:{
+        alignItems:'center',
+        justifyContent:'center',
+        width:screenSize.width,
+        height:screenSize.height*0.4,
+        alignSelf:'center',
+    },
 });
 
 export default styles;

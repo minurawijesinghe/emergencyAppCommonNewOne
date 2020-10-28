@@ -11,6 +11,7 @@ export const Colors={
      RED_LIGHT:'#ff0318',
      BUTTON_DARK:'#242323',
      PURPLE:'#c300ff',
+     GREEN:"#0eed30",
     
     // ACTIONS
      SUCCESS : '#3adb76',

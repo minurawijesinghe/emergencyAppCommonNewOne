@@ -6,16 +6,18 @@ import {  Dimensions,
   Text,
   View, } from 'react-native';
 import styles from './addComplaintStyles';
-import Geolocation from '@react-native-community/geolocation';
+import Geolocation from 'react-native-geolocation-service';
 import LoadingSpinner from 'react-native-loading-spinner-overlay';
 import Icon from 'react-native-vector-icons/Foundation';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'; // remove PROVIDER_GOOGLE import if not using Google Maps
 import Button from '../../components/molecules/buttons/cornerRoundButton';
+import { connect } from 'react-redux';
+import { changeText, signedIn, signedOut, locationUpdate } from '../../actions';
 
 const screenDimensions = Dimensions.get('window');
 const latitudeDelta = 0.005;
 const longitudeDelta = 0.005;
-export default class mapScreen extends Component{
+class mapScreen extends Component{
   constructor(props) {
     super(props);
     this.map = null;
@@ -37,23 +39,22 @@ export default class mapScreen extends Component{
   }
 
   componentDidMount(){
+    console.log("componentDidMount location", this.props.latitude, this.props.longitude);
     Geolocation.getCurrentPosition(
       (position) => {
+        console.log("position ",position);
         this.setState({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
           error: null,
+          loading:false,
         });
       },
       (error) => this.setState({error: error.message}),
-      {enableHighAccuracy: true, timeout: 20000, maximumAge: 2000},
-    ).then(() => {
-        this.setState({
-          loading: false,
-        });
-      })
-    
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    );
   }
+
   setNativeMapRef(ref) {
     this.map = ref;
   }
@@ -132,3 +133,13 @@ export default class mapScreen extends Component{
     );
       }
 }
+function mapStateToProps(state) {
+  return {
+    word: state.changeText,
+    isSignedIn: state.initialState.SIGNED_IN,
+    longitude:state.initialState.longitude,
+    latitude:state.initialState.latitude,
+  }
+}
+
+export default connect(mapStateToProps, { changeText, signedIn, signedOut, locationUpdate })(mapScreen);

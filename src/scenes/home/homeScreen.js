@@ -8,9 +8,9 @@ import {
   AsyncStorage,
   Alert,
 } from 'react-native';
-import {changeText, signedIn, signedOut} from '../../actions';
+import {changeText, signedIn, signedOut, locationUpdate} from '../../actions';
 import {connect} from 'react-redux';
-import Geolocation from '@react-native-community/geolocation';
+import Geolocation from 'react-native-geolocation-service';
 import styles from './homeScreenStyles';
 import AwesomeButton from 'react-native-really-awesome-button';
 import LinearGradient from 'react-native-linear-gradient';
@@ -42,14 +42,11 @@ class homeScreen extends Component {
   }
 
   componentDidMount(){
-    this.fetchCurrentLocation();;
+    this.fetchCurrentLocation();
     this._retrieveData();
-        setInterval(() => {
-          
-         }, 20000);
-     setInterval(() => {
+    // setInterval(() => {
        this.updateLocation();
-      }, 20000);
+     // }, 20000);
   }
   toggleLoading = ()=>{
     this.setState({
@@ -59,6 +56,8 @@ class homeScreen extends Component {
   }
 
   updateLocation(){
+    console.log('user location from update api ', this.state.latitude, this.state.longitude)
+    this.props.locationUpdate(this.state.latitude, this.state.longitude);
     Axios.put(baseURL+'/userLocations',{body:{
       latitude:this.state.latitude,
       longitude:this.state.longitude,
@@ -67,28 +66,23 @@ class homeScreen extends Component {
         'Authorization':`bearer ${this.state.token}`
       }
     })
-    .then((location)=>{
-      //console.log(location)
-    })
+   
   }
 
 
-   fetchCurrentLocation(){
-    this.toggleLoading();
+   fetchCurrentLocation=()=>{
     Geolocation.getCurrentPosition(
       (position) => {
-       
+       console.log('position' , position)
         this.setState({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
           error: null,
           isLoading:false,
         })
-      },
-      (error) => this.setState({error: error.message}),
-      {enableHighAccuracy: true, timeout: 20000, maximumAge: 2000},
-    ).then(() => {
-      })
+      },(error) => this.setState({error: error.message}),
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    );
   }
   changeCanBeChangeStatus(bool) {
       this.setState({
@@ -268,7 +262,9 @@ function mapStateToProps(state) {
   return {
     word: state.changeText,
     isSignedIn: state.initialState.SIGNED_IN,
+    latitude:state.initialState.latitude,
+    longitude:state.initialState.longitude,
   };
 }
 
-export default connect(mapStateToProps, {signedIn, signedOut})(homeScreen);
+export default connect(mapStateToProps, {signedIn, signedOut, locationUpdate})(homeScreen);
