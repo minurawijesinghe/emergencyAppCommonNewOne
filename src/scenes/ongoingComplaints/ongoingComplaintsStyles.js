@@ -11,13 +11,20 @@ const styles = StyleSheet.create({
     },
     headerContainer:{
         marginTop:20,
-        marginLeft:20,
-        justifyContent:'center',
+       flexDirection:'row',
+       justifyContent:'center',
+       marginLeft:10
     },
     headerText:{
         fontFamily:Fonts.MonteSerratBold,
         fontSize:Size.HeaderSize,
         color:Colors.RED_LIGHT,
+        marginTop:30
+    },
+    lottieContainer:{
+        width:200,
+        height:200,
+        marginLeft:20,
     },
 });
 export default styles;

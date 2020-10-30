@@ -10,6 +10,7 @@ import {
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps'; // remove PROVIDER_GOOGLE import if not using Google Maps
 import {Fonts, Size} from '../../../styles/fonts';
 import {Colors} from '../../../styles/colors';
+import LottieView from 'lottie-react-native';
 const ScreenSize = Dimensions.get('window');
 
 const complaintListRender = ({
@@ -22,6 +23,8 @@ const complaintListRender = ({
   image,
   navigation,
   id,
+  complaintId, 
+  onComplaintPress,
 }) => {
   let coordinates = {
     latitude: cLatitude,
@@ -51,6 +54,23 @@ const complaintListRender = ({
           </View>
         </View>
       </TouchableOpacity>
+      <View style={styles.attachmentContainer}>
+      <TouchableOpacity style={styles.complaintDetail} 
+      onPress={()=>onComplaintPress(complaintId)}
+      >
+          <Text style={styles.attachmentText}>Attachments</Text>
+      </TouchableOpacity>
+      <View style={styles.lottieContainer}>
+      <LottieView
+            style={{alignSelf: 'center', justifyContent: 'center'}}
+            source={require('../../../utils/lottieAnimations/attachment.json')}
+            autoPlay
+            loop
+            speed={1}></LottieView>
+      </View>
+
+      </View>
+     
       <View style={{width:'100%', marginLeft:10}}>
       <Text style={styles.headerText}>{'Reported Location'}</Text>
 
@@ -86,6 +106,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     marginVertical: 20,
     borderRadius: 20,
+    backgroundColor:Colors.GRAY_DARK,
   },
   mapContainer: {
     width: ScreenSize.width * 0.9,
@@ -104,8 +125,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   headerText: {
-    fontFamily: Fonts.MonteSerratBold,
+    fontFamily: Fonts.MonteSerrat,
     fontSize: Size.ButtonText,
+    color:Colors.BLACK,
   },
   officerDetailContainer: {
     flexDirection: 'row',
@@ -113,8 +135,8 @@ const styles = StyleSheet.create({
     alignItems:'center',
   },
   imageContainer: {
-    width: 60,
-    height: 60,
+    width: 70,
+    height: 70,
     resizeMode: 'cover',
     alignSelf: 'center',
     borderRadius: 80,
@@ -122,11 +144,11 @@ const styles = StyleSheet.create({
     backgroundColor:Colors.GRAY_DARK,
   },
   image: {
-    width: 50,
-    height: 50,
+    width: 70,
+    height: 70,
     resizeMode: 'cover',
     alignSelf: 'center',
-    borderRadius: 25,
+    borderRadius: 35,
   },
   nameContainer:{
     marginLeft:10,
@@ -136,6 +158,26 @@ const styles = StyleSheet.create({
       fontSize:Size.large,
       color:Colors.GRAY_EXTRA_DARK,
   },
+  complaintDetail:{
+    justifyContent:'center',
+  },
+  attachmentText: {
+    fontFamily: Fonts.MonteSerrat,
+    fontSize: Size.ButtonText,
+    color:Colors.BLUE,
+    textDecorationLine:'underline',
+  },
+  attachmentContainer:{
+    width:'100%',
+    justifyContent:'flex-start',
+    padding:10,
+    flexDirection:'row',
+
+  },
+  lottieContainer:{
+    width:40,
+    height:40,
+  }
 });
 
 export default complaintListRender;

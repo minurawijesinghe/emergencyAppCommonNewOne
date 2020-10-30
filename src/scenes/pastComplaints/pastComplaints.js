@@ -6,77 +6,16 @@ import axios from 'axios';
 import {updateToken, updateOfficerId} from '../../actions';
 import {connect} from 'react-redux';
 import baseURL from '../../utils/baseURL';
+import Spinner from 'react-native-loading-spinner-overlay';
 
-const DATA = [
-  {
-    latitude: 7.447675,
-    longitude: 79.829494,
-    date: '2020-10-28T12:02:05.091+00:00',
-    firstName: 'Minura',
-    secondName: 'Wijesinghe',
-    officerId: '1234567890',
-    image: '',
-    id: 1,
-  },
-  {
-    latitude: 7.447675,
-    longitude: 79.829494,
-    date: '2020-10-28T12:02:05.091+00:00',
-    firstName: 'Minura',
-    secondName: 'Wijesinghe',
-    officerId: '1234567890',
-    image: '',
-    id: 2,
-  },
-  {
-    latitude: 7.447675,
-    longitude: 79.829494,
-    date: '2020-10-28T12:02:05.091+00:00',
-    firstName: 'Minura',
-    secondName: 'Wijesinghe',
-    officerId: '1234567890',
-    image: '',
-    id: 3,
-  },
-  {
-    latitude: 7.447675,
-    longitude: 79.829494,
-    date: '2020-10-28T12:02:05.091+00:00',
-    firstName: 'Minura',
-    secondName: 'Wijesinghe',
-    officerId: '1234567890',
-    image: '',
-    id: 4,
-  },
-  {
-    latitude: 7.447675,
-    longitude: 79.829494,
-    date: '2020-10-28T12:02:05.091+00:00',
-    firstName: 'Minura',
-    secondName: 'Wijesinghe',
-    officerId: '1234567890',
-    image: '',
-    id: 5,
-  },
-  {
-    latitude: 7.447675,
-    longitude: 79.829494,
-    date: '2020-10-28T12:02:05.091+00:00',
-    firstName: 'Minura',
-    secondName: 'Wijesinghe',
-    officerId: '1234567890',
-    image: '',
-    id: 6,
-  },
-];
 
-let complaintsData=[];
 
 class pastComplaints extends Component {
   constructor(props) {
     super(props);
     this.state = {
       complaintsList:null,
+      loadingForApi:true,
     };
   }
 
@@ -94,6 +33,7 @@ class pastComplaints extends Component {
      complaintsData=complaints.data;
      this.setState({
        complaintsList:complaints.data,
+       loadingForApi:false,
      })
     });
   }
@@ -101,18 +41,24 @@ class pastComplaints extends Component {
     this.props.updateOfficerId(officerId);
     this.props.navigation.navigate('OfficerProfile', {officerId:officerId});
   }
+  onComplaintPress=(complaintId)=>{
+    console.log('complaint pressed');
+    this.props.navigation.navigate('Complaint', {complaintId:complaintId});
+  }
 
   render() {
     return (
       <View style={styles.container}>
+        <Spinner
+          visible={this.state.loadingForApi}
+          textContent={
+            <Text style={{color: 'white'}}>Getting Data</Text>
+          }
+        />
         <View style={styles.headerContainer}>
           <Text style={styles.headerText}> Past Complaints </Text>
         </View>
         <View style={styles.flatListContainer}>
-          {
-          
-
-          }
           <FlatList
             showsVerticalScrollIndicator={false}
             data={this.state.complaintsList}
@@ -126,6 +72,8 @@ class pastComplaints extends Component {
                 officerId={item.officerInCharge.officerCode}
                 image={item.officerInCharge.image}
                 navigation={this.navigationToOfficerProfile}
+                complaintId={item._id}
+                onComplaintPress={this.onComplaintPress}
                 id={item.officerInCharge._id}
 
               />

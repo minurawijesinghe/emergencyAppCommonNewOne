@@ -8,6 +8,7 @@ import Button from '../../components/molecules/buttons/cornerRoundButton';
 import axios from 'axios';
 import baseUrl from '../../utils/baseURL';
 import LottieView from 'lottie-react-native';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 
 class loginScreen extends Component {
@@ -17,6 +18,7 @@ class loginScreen extends Component {
           username:'',
           password:'',
           token:'',
+          loadingForApi:false,
         };
       }
 
@@ -43,6 +45,9 @@ class loginScreen extends Component {
       }
     }
     login(){
+      this.setState({
+        loadingForApi:true
+      })
       if(this.state.password!=null && this.state.username!=null){
         axios.post(baseUrl+'/users/login', {
           username:this.state.username,
@@ -50,6 +55,9 @@ class loginScreen extends Component {
         }).then((response)=>{
           console.log('loginCalled')
           console.log(response.data.token);
+          this.setState({
+            loadingForApi:false
+          })
 
 /// if error happen in login update token function should move inside to the condition function,
 
@@ -72,6 +80,12 @@ class loginScreen extends Component {
         console.log(this.props.isSignedIn);
         return (
             <ScrollView>
+               <Spinner
+          visible={this.state.loadingForApi}
+          textContent={
+            <Text>Authenticating...</Text>
+          }
+        />
             <View style={styles.container} >
                 {//<Text> {this.props.word} </Text>
                 }

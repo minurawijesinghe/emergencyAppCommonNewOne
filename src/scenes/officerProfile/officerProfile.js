@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView , Image} from 'react-native';
+import { View, Text, ScrollView , Image, TouchableOpacity} from 'react-native';
 import styles from './officerProfileStyles';
 import {updateToken} from '../../actions';
 import {connect} from 'react-redux';
 import baseUrl from '../../utils/baseURL';
 import Axios from 'axios';
+import Spinner from 'react-native-loading-spinner-overlay';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import {Colors} from '../../styles/colors';
 
 
 
@@ -17,6 +20,7 @@ class officerProfile extends Component {
         officerLastName:'',
         officerCode:'',
         image:'',
+        loadingForApi:true,
     };
   }
 
@@ -44,6 +48,7 @@ class officerProfile extends Component {
        officerLastName:officerDetails.data.lastname,
        image:officerDetails.data.image,
        officerCode:"Officer Code : "+officerDetails.data.officerCode,
+       loadingForApi:false,
      });
      console.log('officer name ', this.state.officerFirstName);
     }).catch(err=>{console.log(err)})
@@ -53,8 +58,22 @@ class officerProfile extends Component {
     var base64Image = 'data:image/jpg;base64,' + this.state.image;
     return (
       <ScrollView style={styles.container}>
-          <View style={styles.headerContainer}></View>
-        <Text style={styles.headerText}> Officer Profile </Text>
+        <Spinner
+          visible={this.state.loadingForApi}
+          textContent={
+            <Text style={{color: 'white'}}>Connecting Server</Text>
+          }
+        />
+          <View style={styles.headerContainer}>
+          <TouchableOpacity style={styles.backButtonContainer} onPress={
+            ()=>this.props.navigation.navigate('PastComplaints')
+          }>
+          <Ionicons name={'arrow-back'} color={Colors.GRAY_MEDIUM} size={50}/>
+          </TouchableOpacity>
+          <Text style={styles.headerText}>
+            Officer Profile
+          </Text>
+        </View>
         <View style={styles.imageContainer}>
             <Image source={{uri: base64Image}} style={styles.image} />
         </View>

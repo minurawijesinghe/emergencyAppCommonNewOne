@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
     headerContainer:{
         flexDirection:'row',
         justifyContent:'flex-start',
+
     },
     headerText:{
         fontFamily:Fonts.MonteSerratBold,
@@ -32,6 +33,7 @@ const styles = StyleSheet.create({
         width:200,
         height:200,
         borderRadius:100,
+        backgroundColor:Colors.GRAY_MEDIUM,
     },
     detailContainer:{
         width:ScreenSize.width*0.9,
@@ -51,6 +53,61 @@ const styles = StyleSheet.create({
         fontSize:Size.ButtonText,
         color:Colors.GRAY_MEDIUM,
         margin:5,
+    },
+    lottieContainer:{
+        flexDirection:'row',
+        width:ScreenSize.width*0.9,
+        height:100,
+        alignItems:'center',
+        marginVertical:10,
+        borderBottomWidth:1,
+        borderBottomColor:Colors.GRAY_EXTRA_DARK,
+        marginHorizontal:20,
+        elevation:2,
+        alignSelf:'center',
+        borderRadius:5
+    },
+    lottieText:{
+        fontFamily:Fonts.MonteSerrat,
+        fontSize:Size.ButtonText,
+        marginLeft:20,
+        color:Colors.WHITE,
+        
+
+    },
+    lottieInnerContainer:{
+        width:80,
+        height:80,
+        alignItems:'center',
+        marginVertical:2,
+        marginLeft:5
+    
+    },
+    noteText:{
+        fontFamily:Fonts.OpenSans,
+        fontSize:Size.large,
+        color:Colors.WHITE
+    },
+    noteContainer:{
+        width:ScreenSize.width*0.8,
+        alignSelf:'center',
+        justifyContent:'center',
+        backgroundColor:Colors.GRAY_DARK,
+        borderRadius:20,
+        marginVertical:10,
+        padding:10
+    },
+    noAttachmentText:{
+        fontFamily:Fonts.OpenSans,
+        fontSize:Size.ButtonText,
+        color:Colors.GRAY_MEDIUM,
+    },
+    noAttachmentTextContainer:{
+        width:ScreenSize.width*0.9,
+        alignSelf:'center',
+        justifyContent:'center',
+        marginTop:60,
+
     },
     backButtonContainer:{
         width:100,
