@@ -31,7 +31,7 @@ export default class homeNavigation extends Component {
           } else if (route.name === 'Settings') {
             iconName = focused ? 'ios-settings' : 'ios-settings';
           } else if (route.name === 'Past') {
-            iconName = focused ? 'ios-list-box' : 'ios-list';
+            iconName = focused ? 'ios-list' : 'ios-list';
           } else if (route.name === 'Ongoing') {
             iconName = focused ? 'ios-alert' : 'ios-alert';
           }

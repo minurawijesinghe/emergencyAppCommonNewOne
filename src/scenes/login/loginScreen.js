@@ -66,10 +66,20 @@ class loginScreen extends Component {
             this._storeData(response.data.token).then(
               this._retrieveData().then(
                 this.props.signedIn()
-              ).catch((err)=>console.log('retrieve error ', err))
-              ).catch(err=>console.log('storing error',err));
+              ).catch((err)=>{
+                this.setState({
+                  loadingForApi:false
+                })
+              })
+              ).catch(err=>{console.log('storing error',err)
+              this.setState({
+                loadingForApi:false
+              })});
           }
         }).catch((err)=>{
+          this.setState({
+            loadingForApi:false
+          })
 
         console.log(err) })
       }else{

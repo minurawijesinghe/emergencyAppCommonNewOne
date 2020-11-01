@@ -20,9 +20,16 @@ class pastComplaints extends Component {
   }
 
   componentDidMount = async () => {
+    this.props.navigation.addListener('focus', () => {
+      this.getUserPastComplaints();
+      console.log('on going focused')  
+    });
     this.getUserPastComplaints();
   };
   getUserPastComplaints=()=>{
+    this.setState({
+      loadingForApi:true,
+    })
     axios
     .get(baseURL + '/complaint/myComplaints', {
       headers: {
@@ -32,7 +39,7 @@ class pastComplaints extends Component {
     .then(complaints => {
      complaintsData=complaints.data;
      this.setState({
-       complaintsList:complaints.data,
+       complaintsList:complaints.data.reverse(),
        loadingForApi:false,
      })
     });
@@ -52,7 +59,7 @@ class pastComplaints extends Component {
         <Spinner
           visible={this.state.loadingForApi}
           textContent={
-            <Text style={{color: 'white'}}>Getting Data</Text>
+            <Text style={{color: 'white'}}>Finding your past complaints</Text>
           }
         />
         <View style={styles.headerContainer}>
@@ -64,17 +71,21 @@ class pastComplaints extends Component {
             data={this.state.complaintsList}
             renderItem={({item}) => (
               <ComplaintListRender
-                cLongitude={item.longitude}
+              item={item}
+              onComplaintPress={this.onComplaintPress}
+              navigation={this.navigationToOfficerProfile}
+
+               /* cLongitude={item.longitude}
                 cLatitude={item.latitude}
                 date={item.createdAt}
                 officerFirstName={item.officerInCharge.firstname}
                 officerSecondName={item.officerInCharge.lastname}
                 officerId={item.officerInCharge.officerCode}
                 image={item.officerInCharge.image}
-                navigation={this.navigationToOfficerProfile}
+                
                 complaintId={item._id}
-                onComplaintPress={this.onComplaintPress}
-                id={item.officerInCharge._id}
+                
+                id={item.officerInCharge._id}*/
 
               />
             )}

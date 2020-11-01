@@ -30,6 +30,7 @@ class App extends Component {
   render() {
     console.log(this.props.isSignedIn);
         console.log(this.props.isSignedIn);
+        console.disableYellowBox = true;
 
     return (
       <NavigationContainer>

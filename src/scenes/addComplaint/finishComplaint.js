@@ -29,6 +29,7 @@ import Axios from 'axios';
 import baseURL from '../../utils/baseURL';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 //const url =  reference.getDownloadURL();
 
@@ -64,8 +65,9 @@ export default class finishComplaint extends Component {
       userLon: 0,
       token: '',
       note: '',
-      finalNote: null,
+      finalNote: undefined,
       isNoteAdded: false,
+      loadingForApi:false,
     };
   }
   audioRecorderPlayer = new AudioRecorderPlayer();
@@ -265,6 +267,9 @@ export default class finishComplaint extends Component {
     }
   };
   uploadVideo = complaintId => {
+    this.setState({
+      loadingForApi:true,
+    })
     const reference = storage().ref(`/complaints/${complaintId}/video.mp4`);
     const url = reference.getDownloadURL();
     console.log('url video', url);
@@ -286,6 +291,9 @@ export default class finishComplaint extends Component {
               },
             }).then(complaint => {
               console.log(complaint.data.complaint);
+              this.setState({
+                loadingForApi:false,
+              })
             });
           });
         },
@@ -295,38 +303,52 @@ export default class finishComplaint extends Component {
 
   };
   uploadAudio = complaintId => {
+    this.setState({
+      loadingForApi:true,
+    })
     // console.log('complaintId', complaintId);
-    const reference1 = storage().ref(`/complaints/${complaintId}/audio.mp4`);
-    const url = reference1.getDownloadURL();
-
-    console.log('url audio', url);
-
-    reference1
-      .putFile('file://sdcard/sound.mp4')
-      .then(
-        () => {
-          reference1.getDownloadURL().then(url => {
-            console.log('image download url from after then', url);
-            Axios({
-              url: baseURL + '/complaint/audio',
-              method: 'PUT',
-              headers: {
-                Authorization: `bearer ${this.state.token}`,
-              },
-              data: {
-                audio: url,
-                complaintId: complaintId,
-              },
-            }).then(complaint => {
-              console.log(complaint.data.complaint);
+    if(this.state.isThereAudio){
+      const reference1 = storage().ref(`/complaints/${complaintId}/audio.mp4`);
+      const url = reference1.getDownloadURL();
+  
+      console.log('url audio', url);
+  
+      reference1
+        .putFile('file://sdcard/sound.mp4')
+        .then(
+          () => {
+            reference1.getDownloadURL().then(url => {
+              console.log('image download url from after then', url);
+              Axios({
+                url: baseURL + '/complaint/audio',
+                method: 'PUT',
+                headers: {
+                  Authorization: `bearer ${this.state.token}`,
+                },
+                data: {
+                  audio: url,
+                  complaintId: complaintId,
+                },
+              }).then(complaint => {
+                console.log(complaint.data.complaint);
+                this.setState({
+                  loadingForApi:false,
+                })
+              });
             });
-          });
-        },
-        err => console.log('err', err),
-      )
-      .catch(err => console.log(err));
+          },
+          err => console.log('err', err),
+        )
+        .catch(err => console.log(err));
+    }
+    this.setState({
+      loadingForApi:false,
+    })
   };
   uploadImage = complaintId => {
+    this.setState({
+      loadingForApi:true,
+    })
     const reference2 = storage().ref(`/complaints/${complaintId}/image.jpg`);
     reference2
       .putFile(imageUri)
@@ -345,6 +367,9 @@ export default class finishComplaint extends Component {
                 complaintId: complaintId,
               },
             }).then(complaint => {
+              this.setState({
+                loadingForApi:false,
+              })
               console.log('image uploaded and saved in db');
             });
           });
@@ -354,6 +379,9 @@ export default class finishComplaint extends Component {
       .catch(err => console.log(err));
   };
   sendComplaint() {
+    this.setState({
+      loadingForApi:true,
+    })
     Axios({
       url: baseURL + '/complaint',
       method: 'POST',
@@ -373,7 +401,7 @@ export default class finishComplaint extends Component {
           this.uploadAudio(complaint.data.complaint._id);
           this.uploadImage(complaint.data.complaint._id);
           this.uploadVideo(complaint.data.complaint._id);
-          Alert.alert('successfully data uploading');
+         // Alert.alert('successfully data uploading');
         },
         err => console.log(err),
       )
@@ -407,6 +435,10 @@ export default class finishComplaint extends Component {
   render() {
     return (
       <ScrollView style={{backgroundColor: Colors.BLACK}}>
+        <Spinner
+          visible={this.state.loadingForApi}
+          textContent={<Text style={{color: 'white'}}>Sending Complaint..</Text>}
+        />
         <Modal isVisible={this.state.isImageModalVisible}>
           <View style={styles.modal}>
             <View style={styles.modalInnerContainer}>

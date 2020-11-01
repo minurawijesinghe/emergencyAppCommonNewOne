@@ -128,5 +128,10 @@ const styles = StyleSheet.create({
         color:Colors.WHITE,
         fontSize:Size.ButtonText,
     },
+    countDownText:{
+        fontFamily:Fonts.OpenSans,
+        fontSize:Size.ButtonText,
+        color:Colors.WHITE,
+    },
 });
 export default styles;
