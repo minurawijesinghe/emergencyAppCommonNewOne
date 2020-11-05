@@ -267,40 +267,44 @@ export default class finishComplaint extends Component {
     }
   };
   uploadVideo = complaintId => {
-    this.setState({
-      loadingForApi:true,
-    })
-    const reference = storage().ref(`/complaints/${complaintId}/video.mp4`);
-    const url = reference.getDownloadURL();
-    console.log('url video', url);
-    reference
-      .putFile(videoUri)
-      .then(
-        () => {
-          reference.getDownloadURL().then(url => {
-            console.log('video download url from after then', url);
-            Axios({
-              url: baseURL + '/complaint/video',
-              method: 'PUT',
-              headers: {
-                Authorization: `bearer ${this.state.token}`,
-              },
-              data: {
-                video: url,
-                complaintId: complaintId,
-              },
-            }).then(complaint => {
-              console.log(complaint.data.complaint);
-              this.setState({
-                loadingForApi:false,
-              })
+   
+    if(this.state.videoExist){
+      this.setState({
+        loadingForApi:true,
+      })
+      const reference = storage().ref(`/complaints/${complaintId}/video.mp4`);
+      const url = reference.getDownloadURL();
+      console.log('url video', url);
+      reference
+        .putFile(videoUri)
+        .then(
+          () => {
+            reference.getDownloadURL().then(url => {
+              console.log('video download url from after then', url);
+              Axios({
+                url: baseURL + '/complaint/video',
+                method: 'PUT',
+                headers: {
+                  Authorization: `bearer ${this.state.token}`,
+                },
+                data: {
+                  video: url,
+                  complaintId: complaintId,
+                },
+              }).then(complaint => {
+                console.log(complaint.data.complaint);
+                this.setState({
+                  loadingForApi:false,
+                })
+              });
             });
-          });
-        },
-        err => console.log('err', err),
-      )
-      .catch(err => console.log(err));
-
+          },
+          err => console.log('err', err),
+        )
+        .catch(err => console.log(err));
+  
+    }
+    
   };
   uploadAudio = complaintId => {
     this.setState({
@@ -346,10 +350,12 @@ export default class finishComplaint extends Component {
     })
   };
   uploadImage = complaintId => {
-    this.setState({
-      loadingForApi:true,
-    })
-    const reference2 = storage().ref(`/complaints/${complaintId}/image.jpg`);
+    
+    if(this.state.imageExist){
+      this.setState({
+        loadingForApi:true,
+      })
+      const reference2 = storage().ref(`/complaints/${complaintId}/image.jpg`);
     reference2
       .putFile(imageUri)
       .then(
@@ -377,6 +383,8 @@ export default class finishComplaint extends Component {
         err => console.log('err', err),
       )
       .catch(err => console.log(err));
+    }
+    
   };
   sendComplaint() {
     this.setState({
@@ -398,10 +406,37 @@ export default class finishComplaint extends Component {
       .then(
         complaint => {
           console.log('complaint id', complaint.data.complaint._id);
-          this.uploadAudio(complaint.data.complaint._id);
+          Axios({
+            url: baseURL + '/afterComplaint',
+            method: 'POST',
+            headers: {
+              Authorization: `bearer ${this.state.token}`,
+            },
+            data: {
+              latitude: this.state.complaintLat,
+              longitude: this.state.complaintLon,
+              complaintData:complaint.data.complaint._id,
+            },
+          }).then(res=>{
+            console.log('complaint data', complaint.data._id);
+            console.log('response from after complaint', res.data);
+            this.uploadAudio(complaint.data.complaint._id);
           this.uploadImage(complaint.data.complaint._id);
           this.uploadVideo(complaint.data.complaint._id);
-         // Alert.alert('successfully data uploading');
+          this.setState({
+            loadingForApi:false,
+          })
+          }, err=>{
+            this.setState({
+              loadingForApi:false,
+            })
+            console.log("err", err);
+          }).catch(err=>{
+            this.setState({
+              loadingForApi:false,
+            })
+            console.log(err)
+          })
         },
         err => console.log(err),
       )

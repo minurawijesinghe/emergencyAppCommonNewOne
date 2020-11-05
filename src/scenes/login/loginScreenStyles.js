@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     },
     loginText:{
         fontFamily:Fonts.MonteSerratBold,
-        letterSpacing:5,
+        letterSpacing:3,
         fontSize:Size.HeaderSize,
         alignSelf:'center',
         marginTop:40,

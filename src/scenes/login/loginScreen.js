@@ -99,8 +99,10 @@ class loginScreen extends Component {
             <View style={styles.container} >
                 {//<Text> {this.props.word} </Text>
                 }
+                <Text style={styles.loginText}>Login to your emergency partner!</Text>
+
                 <View style={styles.loginAnimationContainer}>
-                  <LottieView source={require('../../utils/lottieAnimations/login.json')} autoPlay loop speed={0.5}/>
+                  <LottieView source={require('../../utils/lottieAnimations/login.json')} autoPlay loop speed={1}/>
                 </View>
                 <View style={styles.itemContainer}>
                   <Item floatingLabel>
@@ -119,6 +121,7 @@ class loginScreen extends Component {
                     <Label style={styles.labelStyle}>Password</Label>
                     <Input
                       keyboardType={'default'}
+                      secureTextEntry={true}
                       style={styles.Input}
                       onChangeText={(password) => {
                        this.setState({password: password});

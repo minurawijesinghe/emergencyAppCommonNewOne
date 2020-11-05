@@ -32,18 +32,6 @@ class generalSettings extends Component {
               <Text style={styles.textInsideButtons}>Log Out</Text>
             </Button>
           </View>
-          <View style={styles.buttonContainer}>
-            <Button
-            width={ScreenSize.width * 0.9}
-              type="secondary"
-              backgroundDarker={Colors.BLACK}
-              borderColor={Colors.RED_LIGHT}
-              borderWidth={2}
-              backgroundColor={Colors.BUTTON_DARK}
-              backgroundShadow={Colors.RED_DARK}>
-              <Text style={styles.textInsideButtons}>Cancel complaint</Text>
-            </Button>
-          </View>
         </View>
       </ScrollView>
     );

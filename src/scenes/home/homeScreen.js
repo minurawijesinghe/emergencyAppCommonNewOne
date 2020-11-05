@@ -24,9 +24,7 @@ import Axios from 'axios';
 import baseURL from '../../utils/baseURL';
 import storage from '@react-native-firebase/storage';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
-import { useIsFocused } from '@react-navigation/native';
-
-
+import {useIsFocused} from '@react-navigation/native';
 
 const ScreenSize = Dimensions.get('window');
 
@@ -37,60 +35,72 @@ class homeScreen extends Component {
       isLoading: false,
       isPressed: false,
       canBeChangeStatus: true,
-      latitude:0,
-      loadingState:'Loading ...',
-      longitude:0,
-      spinnerText:'fetching location...',
-      error:null,
-      token:'',
-      recordSecs:0,
-      isRecording:false,
-      isThereAudio:false,
-      recordTime:0,
-      isRecording:false,
-      loadingForApi:true,
-      ongoingComplaint:false,
-      focused:false,
-      uploading:false,
+      latitude: 0,
+      loadingState: 'Loading ...',
+      longitude: 0,
+      spinnerText: 'fetching location...',
+      error: null,
+      token: '',
+      recordSecs: 0,
+      isRecording: false,
+      isThereAudio: false,
+      recordTime: 0,
+      isRecording: false,
+      loadingForApi: true,
+      ongoingComplaint: false,
+      focused: false,
+      uploading: false,
+      loadingForApi:false,
     };
   }
   audioRecorderPlayer = new AudioRecorderPlayer();
 
-  componentDidMount(){
-   this.props.navigation.addListener('focus', () => {
-    this._onGettingOngoingComplaint();  });
-   
+  componentDidMount() {
+    this.props.navigation.addListener('focus', () => {
+      this._onGettingOngoingComplaint();
+    });
+
     this._onGettingOngoingComplaint();
     this.onStopRecord();
     this.fetchCurrentLocation();
     this._retrieveData();
-     setInterval(() => {
-       this.updateLocation();
-      }, 20000);
+    //setInterval(() => {
+    //  this.updateLocation();
+   // }, 20000);
   }
-  toggleLoading = ()=>{
+  toggleLoading = () => {
     this.setState({
-     // isLoading:!this.state.isLoading,
+      // isLoading:!this.state.isLoading,
     });
-    
-  }
+  };
 
-  updateLocation(){
-    console.log('user location from update api ', this.state.latitude, this.state.longitude)
+  updateLocation() {
+    console.log(
+      'user location from update api ',
+      this.state.latitude,
+      this.state.longitude,
+    );
     this.props.locationUpdate(this.state.latitude, this.state.longitude);
-    Axios.put(baseURL+'/userLocations',{body:{
-      latitude:this.state.latitude,
-      longitude:this.state.longitude,
-    }},{
-      headers:{
-        'Authorization':`bearer ${this.state.token}`
-      }
-    })
-   
+    Axios.put(
+      baseURL + '/users/updateUserLocation',
+      {
+        body: {
+          latitude: this.state.latitude,
+          longitude: this.state.longitude,
+        },
+      },
+      {
+        headers: {
+          Authorization: `bearer ${this.state.token}`,
+        },
+      },
+    ).then(userLocation => {
+      console.log('userLocation', userLocation.data);
+    });
   }
-  componentWillMount=()=>{
+  componentWillMount = () => {
     console.log('component will mount executed');
-  }
+  };
 
   onStartRecord = async () => {
     console.log('recordingstart');
@@ -123,64 +133,68 @@ class homeScreen extends Component {
 
     console.log('recording results', result);
   };
-  _onGettingOngoingComplaint =()=>{
-   
-    console.log('getting on going complaint executed with token ', this.props.token);
+  _onGettingOngoingComplaint = () => {
+    console.log(
+      'getting on going complaint executed with token ',
+      this.props.token,
+    );
 
     Axios({
       method: 'GET',
       url: baseURL + '/complaint/myOnGoingComplaint',
       headers: {Authorization: `Bearer ${this.props.token}`},
     })
-    .then((myComplaint)=>{
-      if(myComplaint.data==null){
+      .then(myComplaint => {
+        if (myComplaint.data == null) {
+          this.setState({
+            canBeChangeStatus: true,
+            ongoingComplaint: false,
+            isPressed: false,
+          });
+        }
+        console.log('getting on going complaint name ', myComplaint.data);
         this.setState({
-          canBeChangeStatus:true,
-          ongoingComplaint:false,
-          isPressed:false,
-        
+          loadingForApi: false,
         });
-      }
-      console.log('getting on going complaint name ', myComplaint.data);
-      this.setState({
-        loadingForApi:false,
+
+        if (typeof myComplaint.data._id !== 'undefined') {
+          this.setState({
+            canBeChangeStatus: false,
+            ongoingComplaint: true,
+          });
+        }
       })
-
-      if(typeof myComplaint.data._id!=='undefined'){
+      .catch(err => {
+        console.log(err);
         this.setState({
-          canBeChangeStatus:false,
-          ongoingComplaint:true,
-        
+          loadingForApi: false,
         });
-      }
-    }).catch(err=>{console.log(err)
-      this.setState({
-        loadingForApi:false,
-      })});
-  }
+      });
+  };
 
-   fetchCurrentLocation=()=>{
+  fetchCurrentLocation = () => {
     Geolocation.getCurrentPosition(
-      (position) => {
-       console.log('position' , position)
+      position => {
+        console.log('position', position);
         this.setState({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
           error: null,
-          isLoading:false,
-        })
-      },(error) => this.setState({error: error.message}),
+          isLoading: false,
+        });
+      },
+      error => this.setState({error: error.message}),
       {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
-  }
+  };
   changeCanBeChangeStatus(bool) {
     this.onStopRecord();
-      this.setState({
-        canBeChangeStatus: bool,
-      });
-      if(!this.state.canBeChangeStatus){
-        this.sendComplaint();
-      }
+    this.setState({
+      canBeChangeStatus: bool,
+    });
+    if (!this.state.canBeChangeStatus) {
+      this.sendComplaint();
+    }
   }
   changePressedStatus() {
     if (this.state.isPressed) {
@@ -196,30 +210,28 @@ class homeScreen extends Component {
     }
   }
 
-   // fetch the data back asyncronously
-   _retrieveData = async () => {
+  // fetch the data back asyncronously
+  _retrieveData = async () => {
     try {
-        const value = await AsyncStorage.getItem('token');
-        if (value !== null) {
-            // Our data is fetched successfully
-            console.log("saved Token",value);
-            this.setState({
-              token:value,
-            });
-            return value;
-        }
+      const value = await AsyncStorage.getItem('token');
+      if (value !== null) {
+        // Our data is fetched successfully
+        console.log('saved Token', value);
+        this.setState({
+          token: value,
+        });
+        return value;
+      }
     } catch (error) {
-        // Error retrieving data
-        return error;
+      // Error retrieving data
+      return error;
     }
-  }
+  };
   uploadAudio = complaintId => {
     // console.log('complaintId', complaintId);
-    const reference1 = storage().ref(
-      `/complaints/${complaintId}/audio.mp4`,
-    );
+    const reference1 = storage().ref(`/complaints/${complaintId}/audio.mp4`);
 
-   // console.log('url audio', url);
+    // console.log('url audio', url);
 
     reference1
       .putFile('file://sdcard/sound.mp4')
@@ -239,8 +251,8 @@ class homeScreen extends Component {
               },
             }).then(complaint => {
               this.setState({
-                uploading:false,
-              })
+                uploading: false,
+              });
               this.props.navigation.navigate('Home');
             });
           });
@@ -250,51 +262,92 @@ class homeScreen extends Component {
       .catch(err => console.log(err));
   };
 
-  sendComplaint=()=>{
+  sendComplaint = () => {
     this.setState({
       uploading:true,
-    })
+      loadingForApi: true,
+    });
     Axios({
       url: baseURL + '/complaint',
       method: 'POST',
       headers: {
-          Authorization: `bearer ${this.state.token}`
+        Authorization: `bearer ${this.state.token}`,
       },
       data: {
-          latitude: this.state.latitude,
-          longitude: this.state.longitude,
-      }
-  }).then((complaint) => {
-      console.log('complaint id', complaint.data.complaint._id);
-      this.uploadAudio(complaint.data.complaint._id);
-      Alert.alert('successfully data uploading');
-  }, err => console.log(err))
-      .catch((err) => console.log(err));
-  }
+        latitude: this.state.latitude,
+        longitude: this.state.longitude,
+      },
+    })
+      .then(
+        complaint => {
+          console.log('complaint id', complaint.data.complaint._id);
+          Axios({
+            url: baseURL + '/afterComplaint',
+            method: 'POST',
+            headers: {
+              Authorization: `bearer ${this.state.token}`,
+            },
+            data: {
+              latitude: this.state.latitude,
+              longitude: this.state.longitude,
+              complaintData: complaint.data.complaint._id,
+            },
+          })
+            .then(
+              res => {
+                console.log('complaint data', complaint.data._id);
+                console.log('response from after complaint', res.data);
+                this.uploadAudio(complaint.data.complaint._id);
+                this.setState({
+                  loadingForApi: false,
+                });
+              },
+              err => {
+                this.setState({
+                  loadingForApi: false,
+                  uploading:false,
+                });
+                console.log('err', err);
+              },
+            )
+            .catch(err => {
+              this.setState({
+                loadingForApi: false,
+                uploading:false,
+              });
+              console.log(err);
+            });
+          //Alert.alert('successfully data uploading');
+        },
+        err => console.log(err),
+      )
+      .catch(err => console.log(err));
+  };
 
   render() {
     return (
       <ScrollView>
-         <Spinner
+        <Spinner
           visible={this.state.isLoading}
           textContent={this.state.loadingState}
           textStyle={styles.spinnerTextStyle}
         />
-         <Spinner
+        <Spinner
           visible={this.state.loadingForApi}
           textContent={'getting your status...'}
           textStyle={styles.spinnerTextStyle}
         />
-         <Spinner
+        <Spinner
           visible={this.state.uploading}
           textContent={'data uploading...'}
           textStyle={styles.spinnerTextStyle}
         />
         <View style={styles.container}>
-        <TouchableWithoutFeedback 
-        onPress={()=>{this._onGettingOngoingComplaint()}}
-        >
-          <Text style={styles.header}>Complaint counter</Text>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              this._onGettingOngoingComplaint();
+            }}>
+            <Text style={styles.header}>Complaint counter</Text>
           </TouchableWithoutFeedback>
           <View style={styles.buttonContainer}>
             <AwesomeButtonRick
@@ -327,54 +380,57 @@ class homeScreen extends Component {
                       with voice record of 10 seconds{' '}
                     </Text>
                     <Text style={styles.subText}> to the service provider</Text>
-                    <Text style={styles.subText}> you can edit them on the  </Text>
+                    <Text style={styles.subText}>
+                      {' '}
+                      you can edit them on the{' '}
+                    </Text>
                     <Text style={styles.subText}> ongoing complaint tab </Text>
-
                   </View>
                 ) : (
                   <View>
                     <Text style={styles.countDownText}>Recording...</Text>
-                  <CountDown
-                    until={10}
-                    size={30}
-                    onFinish={() => {
-                      this.changeCanBeChangeStatus(false);
-                    }}
-                    digitStyle={{backgroundColor: Colors.BUTTON_DARK}}
-                    digitTxtStyle={{color: '#1CC625'}}
-                    timeToShow={['S']}
-                    timeLabels={{s: ''}}
-                  />
+                    <CountDown
+                      until={10}
+                      size={30}
+                      onFinish={() => {
+                        this.changeCanBeChangeStatus(false);
+                      }}
+                      digitStyle={{backgroundColor: Colors.BUTTON_DARK}}
+                      digitTxtStyle={{color: '#1CC625'}}
+                      timeToShow={['S']}
+                      timeLabels={{s: ''}}
+                    />
                   </View>
                 )
               ) : (
                 <View style={styles.buttonDisabledView}>
-                  <Text style={styles.buttonDisabledText}>
-                    BUTTON DISABLED
+                  <Text style={styles.buttonDisabledText}>BUTTON DISABLED</Text>
+                  <Text style={styles.buttonDisabledTextSubText}>
+                    You have ongoing Complaint
                   </Text>
                   <Text style={styles.buttonDisabledTextSubText}>
-                    You have ongoing Complaint 
-                  </Text>
-                  <Text style={styles.buttonDisabledTextSubText}>
-                    look at the ongoing tab 
+                    look at the ongoing tab
                   </Text>
                 </View>
               )}
             </AwesomeButtonRick>
           </View>
-          {!this.state.canBeChangeStatus?(
-             <View style={styles.cancelComplaintView}>
-             <Text style={styles.importantText}>IMPORTANT.....!</Text>
-             <Text style={styles.emergencyComplaintCancelText}>You have sent a emergency complaint please be sure to cancel the complaint if it is not necessary !</Text>
-             <View style={styles.CancelButtonContainer}>
-                     </View>
-           </View>):(<Text></Text>)
-         }
-         
+          {!this.state.canBeChangeStatus ? (
+            <View style={styles.cancelComplaintView}>
+              <Text style={styles.importantText}>IMPORTANT.....!</Text>
+              <Text style={styles.emergencyComplaintCancelText}>
+                You have sent a emergency complaint please be sure to cancel the
+                complaint if it is not necessary !
+              </Text>
+              <View style={styles.CancelButtonContainer}></View>
+            </View>
+          ) : (
+            <Text></Text>
+          )}
+
           <View style={styles.nextButtonContainer}>
-            {
-              this.state.ongoingComplaint ? (
-                <Button
+            {this.state.ongoingComplaint ? (
+              <Button
                 type="primary"
                 width={ScreenSize.width * 0.9}
                 backgroundDarker={Colors.BLACK}
@@ -382,14 +438,13 @@ class homeScreen extends Component {
                 borderWidth={2}
                 backgroundColor={Colors.BUTTON_DARK}
                 backgroundShadow={Colors.RED_DARK}
-                disabled={true}
-                >
+                disabled={true}>
                 <Text style={styles.textNextButton}>
-                  You have a ongoing Complaint 
+                  You have a ongoing Complaint
                 </Text>
               </Button>
-              ):(
-                <Button
+            ) : (
+              <Button
                 type="primary"
                 width={ScreenSize.width * 0.9}
                 backgroundDarker={Colors.BLACK}
@@ -402,9 +457,7 @@ class homeScreen extends Component {
                   You are not the victim but need complaint
                 </Text>
               </Button>
-              )
-            }
-           
+            )}
           </View>
         </View>
       </ScrollView>
@@ -415,10 +468,12 @@ function mapStateToProps(state) {
   return {
     word: state.changeText,
     isSignedIn: state.initialState.SIGNED_IN,
-    latitude:state.initialState.latitude,
-    longitude:state.initialState.longitude,
-    token:state.initialState.token,
+    latitude: state.initialState.latitude,
+    longitude: state.initialState.longitude,
+    token: state.initialState.token,
   };
 }
 
-export default connect(mapStateToProps, {signedIn, signedOut, locationUpdate})(homeScreen);
+export default connect(mapStateToProps, {signedIn, signedOut, locationUpdate})(
+  homeScreen,
+);
