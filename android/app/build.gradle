@@ -157,6 +157,12 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+       /* release {
+      storeFile file('minura.keystore')
+      storePassword 'minura123'
+      keyAlias 'minura'
+      keyPassword 'minura123'
+    }*/
     }
     buildTypes {
         debug {

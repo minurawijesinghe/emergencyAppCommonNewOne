@@ -16,4 +16,5 @@ export const Fonts = {
    HeaderSize:25,
    ButtonText:20,
    large:15,
+   small:13
   };

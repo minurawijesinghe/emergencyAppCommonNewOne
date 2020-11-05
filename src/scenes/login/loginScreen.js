@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
 import { Text, View, TouchableOpacity, ScrollView , AsyncStorage, Alert} from 'react-native'
-import {  changeText , signedIn, signedOut } from '../../actions';
+import {  changeText , signedIn, signedOut, updateToken } from '../../actions';
 import { connect } from 'react-redux';
 import {Item, Input, Label} from 'native-base';
 import styles from './loginScreenStyles';
 import Button from '../../components/molecules/buttons/cornerRoundButton';
 import axios from 'axios';
 import baseUrl from '../../utils/baseURL';
+import LottieView from 'lottie-react-native';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 
 class loginScreen extends Component {
@@ -16,6 +18,7 @@ class loginScreen extends Component {
           username:'',
           password:'',
           token:'',
+          loadingForApi:false,
         };
       }
 
@@ -42,6 +45,9 @@ class loginScreen extends Component {
       }
     }
     login(){
+      this.setState({
+        loadingForApi:true
+      })
       if(this.state.password!=null && this.state.username!=null){
         axios.post(baseUrl+'/users/login', {
           username:this.state.username,
@@ -49,16 +55,32 @@ class loginScreen extends Component {
         }).then((response)=>{
           console.log('loginCalled')
           console.log(response.data.token);
+          this.setState({
+            loadingForApi:false
+          })
+
+/// if error happen in login update token function should move inside to the condition function,
+
+          this.props.updateToken(response.data.token);
           if(response.data.success){
-            Alert.alert(JSON.stringify("login successful"));  
             this._storeData(response.data.token).then(
               this._retrieveData().then(
                 this.props.signedIn()
-              ).catch((err)=>console.log('retrieve error ', err))
-              ).catch(err=>console.log('storing error',err));
+              ).catch((err)=>{
+                this.setState({
+                  loadingForApi:false
+                })
+              })
+              ).catch(err=>{console.log('storing error',err)
+              this.setState({
+                loadingForApi:false
+              })});
           }
         }).catch((err)=>{
-          Alert.alert(JSON.stringify(err)); 
+          this.setState({
+            loadingForApi:false
+          })
+
         console.log(err) })
       }else{
     Alert.alert('empty fields are there')  }
@@ -68,10 +90,20 @@ class loginScreen extends Component {
         console.log(this.props.isSignedIn);
         return (
             <ScrollView>
+               <Spinner
+          visible={this.state.loadingForApi}
+          textContent={
+            <Text>Authenticating...</Text>
+          }
+        />
             <View style={styles.container} >
                 {//<Text> {this.props.word} </Text>
                 }
-                <Text style={styles.loginText}>LogIn</Text>
+                <Text style={styles.loginText}>Login to your emergency partner!</Text>
+
+                <View style={styles.loginAnimationContainer}>
+                  <LottieView source={require('../../utils/lottieAnimations/login.json')} autoPlay loop speed={1}/>
+                </View>
                 <View style={styles.itemContainer}>
                   <Item floatingLabel>
                     <Label style={styles.labelStyle}>National identity card number</Label>
@@ -89,6 +121,7 @@ class loginScreen extends Component {
                     <Label style={styles.labelStyle}>Password</Label>
                     <Input
                       keyboardType={'default'}
+                      secureTextEntry={true}
                       style={styles.Input}
                       onChangeText={(password) => {
                        this.setState({password: password});
@@ -116,4 +149,4 @@ function mapStateToProps(state) {
     }
   }
 
-export default connect(mapStateToProps, { signedIn, signedOut})(loginScreen);
+export default connect(mapStateToProps, { signedIn, signedOut, updateToken})(loginScreen);

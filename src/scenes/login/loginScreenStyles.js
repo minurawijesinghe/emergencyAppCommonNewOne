@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     },
     loginText:{
         fontFamily:Fonts.MonteSerratBold,
-        letterSpacing:5,
+        letterSpacing:3,
         fontSize:Size.HeaderSize,
         alignSelf:'center',
         marginTop:40,
@@ -30,6 +30,13 @@ const styles = StyleSheet.create({
         alignItems:'center',
         justifyContent:'center',
         marginTop:30,
+    },
+    loginAnimationContainer:{
+        alignItems:'center',
+        justifyContent:'center',
+        width:screenSize.width,
+        height:screenSize.height*0.4,
+        alignSelf:'center',
     },
 });
 

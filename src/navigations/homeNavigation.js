@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Home from './homeInterNav';
-import PastComplaints from '../scenes/pastComplaints/pastComplaints';
+import PastComplaints from './pastComplaintsNav';
 import OngoingComplaints from '../scenes/ongoingComplaints/ongoingComplaints';
 import settingsNav from  './settingsNavigation';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -31,7 +31,7 @@ export default class homeNavigation extends Component {
           } else if (route.name === 'Settings') {
             iconName = focused ? 'ios-settings' : 'ios-settings';
           } else if (route.name === 'Past') {
-            iconName = focused ? 'ios-list-box' : 'ios-list';
+            iconName = focused ? 'ios-list' : 'ios-list';
           } else if (route.name === 'Ongoing') {
             iconName = focused ? 'ios-alert' : 'ios-alert';
           }
